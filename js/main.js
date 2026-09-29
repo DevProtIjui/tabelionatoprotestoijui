@@ -151,41 +151,56 @@
     if (e.key === 'ArrowRight') showRelative(1);
   });
 
-  /* ---------------- contact form (client-side, via mailto) ---------------- */
-  var contactForm = document.getElementById('contactForm');
-  var formNote = document.getElementById('formNote');
+  /* ---------------- gallery carousel ---------------- */
+  var carouselTrack = document.getElementById('carouselTrack');
+  var carouselPrev = document.getElementById('carouselPrev');
+  var carouselNext = document.getElementById('carouselNext');
+  var carouselDots = Array.prototype.slice.call(document.querySelectorAll('.carousel-dot'));
+  var carouselSlides = Array.prototype.slice.call(document.querySelectorAll('.carousel-slide'));
 
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
-      e.preventDefault();
+  if (carouselTrack && carouselSlides.length) {
+    function getActiveSlideIndex() {
+      var trackCenter = carouselTrack.scrollLeft + carouselTrack.clientWidth / 2;
+      var closest = 0;
+      var closestDist = Infinity;
+      carouselSlides.forEach(function (slide, i) {
+        var center = slide.offsetLeft + slide.clientWidth / 2;
+        var dist = Math.abs(center - trackCenter);
+        if (dist < closestDist) { closestDist = dist; closest = i; }
+      });
+      return closest;
+    }
 
-      var nome = document.getElementById('nome').value.trim();
-      var email = document.getElementById('email').value.trim();
-      var telefone = document.getElementById('telefone').value.trim();
-      var assunto = document.getElementById('assunto').value;
-      var mensagem = document.getElementById('mensagem').value.trim();
+    function setActiveDot(index) {
+      carouselDots.forEach(function (dot, i) {
+        var active = i === index;
+        dot.classList.toggle('is-active', active);
+        dot.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+    }
 
-      if (!nome || !email || !mensagem) {
-        formNote.textContent = 'Por favor, preencha os campos obrigatórios.';
-        formNote.style.color = '#b33a3a';
-        return;
-      }
+    function scrollToSlide(index) {
+      var slide = carouselSlides[index];
+      if (slide) carouselTrack.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
+    }
 
-      var body = 'Nome: ' + nome + '\n' +
-                  'E-mail: ' + email + '\n' +
-                  (telefone ? 'Telefone: ' + telefone + '\n' : '') +
-                  'Assunto: ' + assunto + '\n\n' +
-                  mensagem;
-
-      var mailtoUrl = 'mailto:protestoijui@gmail.com' +
-        '?subject=' + encodeURIComponent('[Site] ' + assunto + ' — ' + nome) +
-        '&body=' + encodeURIComponent(body);
-
-      window.location.href = mailtoUrl;
-
-      formNote.style.color = 'var(--navy-800)';
-      formNote.textContent = 'Abrindo seu aplicativo de e-mail para concluir o envio...';
+    if (carouselPrev) carouselPrev.addEventListener('click', function () {
+      scrollToSlide(Math.max(getActiveSlideIndex() - 1, 0));
     });
+    if (carouselNext) carouselNext.addEventListener('click', function () {
+      scrollToSlide(Math.min(getActiveSlideIndex() + 1, carouselSlides.length - 1));
+    });
+    carouselDots.forEach(function (dot, i) {
+      dot.addEventListener('click', function () { scrollToSlide(i); });
+    });
+
+    var carouselScrollTimeout;
+    carouselTrack.addEventListener('scroll', function () {
+      clearTimeout(carouselScrollTimeout);
+      carouselScrollTimeout = setTimeout(function () {
+        setActiveDot(getActiveSlideIndex());
+      }, 100);
+    }, { passive: true });
   }
 
 })();
