@@ -88,8 +88,10 @@
     revealEls.forEach(function (el) { el.classList.add('in-view'); });
   }
 
-  /* ---------------- lightbox gallery ---------------- */
-  var galleryItems = Array.prototype.slice.call(document.querySelectorAll('.gallery-item'));
+  /* ---------------- lightbox gallery (images only; videos use native controls) ---------------- */
+  var galleryItems = Array.prototype.slice.call(document.querySelectorAll('.gallery-item')).filter(function (el) {
+    return !!el.querySelector('img');
+  });
   var lightbox = document.getElementById('lightbox');
   var lightboxImg = document.getElementById('lightboxImg');
   var lightboxClose = document.getElementById('lightboxClose');
