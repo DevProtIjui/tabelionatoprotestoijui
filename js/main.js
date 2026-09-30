@@ -13,24 +13,22 @@
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ---------------- header on scroll + progress bar ---------------- */
-  function onScroll() {
-    var scrollY = window.scrollY || window.pageYOffset;
+  // Section offsets and document height are cached (read once, not per scroll
+  // tick) so scrolling never forces a synchronous layout reflow.
+  var sectionOffsets = [];
+  var docHeight = 0;
 
-    if (header) header.classList.toggle('is-scrolled', scrollY > 40);
-    if (backToTop) backToTop.classList.toggle('is-visible', scrollY > 600);
-
-    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    var progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
-    if (scrollProgress) scrollProgress.style.width = progress + '%';
-
-    updateActiveNav(scrollY);
+  function measureLayout() {
+    sectionOffsets = Array.prototype.map.call(sections, function (section) {
+      return { id: section.id, top: section.offsetTop };
+    });
+    docHeight = document.documentElement.scrollHeight - window.innerHeight;
   }
 
   function updateActiveNav(scrollY) {
     var current = '';
-    sections.forEach(function (section) {
-      var top = section.offsetTop - 140;
-      if (scrollY >= top) current = section.id;
+    sectionOffsets.forEach(function (section) {
+      if (scrollY >= section.top - 140) current = section.id;
     });
     navLinks.forEach(function (link) {
       var match = link.getAttribute('href') === '#' + current;
@@ -38,7 +36,43 @@
     });
   }
 
-  window.addEventListener('scroll', onScroll, { passive: true });
+  function onScroll() {
+    var scrollY = window.scrollY || window.pageYOffset;
+
+    if (header) header.classList.toggle('is-scrolled', scrollY > 40);
+    if (backToTop) backToTop.classList.toggle('is-visible', scrollY > 600);
+
+    var progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
+    if (scrollProgress) scrollProgress.style.width = progress + '%';
+
+    updateActiveNav(scrollY);
+  }
+
+  var scrollTicking = false;
+  function requestScrollUpdate() {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(function () {
+      onScroll();
+      scrollTicking = false;
+    });
+  }
+
+  measureLayout();
+  window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+  window.addEventListener('resize', measureLayout);
+  // Re-measure once everything (web fonts, images) has settled, since font
+  // swaps and late-loading media reflow the page after the initial measurement.
+  window.addEventListener('load', function () {
+    measureLayout();
+    onScroll();
+  });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      measureLayout();
+      onScroll();
+    });
+  }
   onScroll();
 
   /* ---------------- mobile nav ---------------- */
