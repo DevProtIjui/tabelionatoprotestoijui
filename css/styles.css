@@ -269,7 +269,7 @@ button { font: inherit; cursor: pointer; }
 
 .pqta-badge {
   flex-shrink: 0;
-  width: 42px; height: 42px;
+  width: 56px; height: 56px;
   margin-left: 2px;
   filter: drop-shadow(0 2px 8px rgba(0,0,0,.35));
   transition: transform .2s var(--ease);
@@ -277,7 +277,7 @@ button { font: inherit; cursor: pointer; }
 }
 .pqta-badge:hover { transform: scale(1.1); }
 
-.header-cta { margin-left: 6px; }
+.header-cta { flex-shrink: 0; white-space: nowrap; margin-left: 6px; }
 
 .nav-toggle {
   display: none;
