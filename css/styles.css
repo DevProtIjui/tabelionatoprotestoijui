@@ -819,6 +819,20 @@ button { font: inherit; cursor: pointer; }
 .info-card span, .info-card a { color: var(--muted); font-size: .93rem; }
 .info-card a:hover { color: var(--navy-800); text-decoration: underline; }
 
+.phone-line { display: inline-flex; align-items: center; gap: 8px; }
+.whatsapp-inline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--gold-light);
+  transition: transform .18s var(--ease);
+}
+.whatsapp-inline svg { width: 13px; height: 13px; fill: var(--navy-950); }
+.whatsapp-inline:hover { transform: scale(1.14); text-decoration: none; }
+
 .location-map {
   position: relative;
   display: flex;
