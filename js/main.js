@@ -12,6 +12,18 @@
 
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  /* ---------------- open <details> targeted by URL hash ---------------- */
+  function openHashTargetDetails() {
+    if (!location.hash) return;
+    var target = document.querySelector(location.hash);
+    if (target && target.tagName === 'DETAILS' && !target.open) {
+      target.open = true;
+      target.scrollIntoView({ block: 'start' });
+    }
+  }
+  openHashTargetDetails();
+  window.addEventListener('hashchange', openHashTargetDetails);
+
   /* ---------------- header on scroll + progress bar ---------------- */
   // Section offsets and document height are cached (read once, not per scroll
   // tick) so scrolling never forces a synchronous layout reflow.
@@ -254,6 +266,24 @@
         syncActiveVideo(index);
       }, 100);
     }, { passive: true });
+  }
+
+  /* ---------------- cookie banner ---------------- */
+  var cookieBanner = document.getElementById('cookieBanner');
+  var cookieAccept = document.getElementById('cookieAccept');
+  if (cookieBanner && cookieAccept) {
+    var CONSENT_KEY = 'tabelionato-cookie-consent';
+    var hasConsent = false;
+    try { hasConsent = localStorage.getItem(CONSENT_KEY) === '1'; } catch (e) {}
+
+    if (!hasConsent) {
+      setTimeout(function () { cookieBanner.classList.add('is-visible'); }, 800);
+    }
+
+    cookieAccept.addEventListener('click', function () {
+      cookieBanner.classList.remove('is-visible');
+      try { localStorage.setItem(CONSENT_KEY, '1'); } catch (e) {}
+    });
   }
 
 })();
