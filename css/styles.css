@@ -277,6 +277,21 @@ button { font: inherit; cursor: pointer; }
 }
 .pqta-badge:hover { transform: scale(1.1); }
 
+.header-social { display: flex; gap: 8px; flex-shrink: 0; }
+.header-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  color: #fff;
+  transition: background-color .2s var(--ease), color .2s var(--ease), transform .2s var(--ease);
+}
+.header-social a:hover { background: var(--gold-light); color: var(--navy-950); transform: translateY(-2px); }
+.header-social svg { width: 15px; height: 15px; }
+
 .header-cta { flex-shrink: 0; white-space: nowrap; margin-left: 6px; }
 
 .nav-toggle {
@@ -1178,7 +1193,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 /* ---------- mobile nav ---------- */
-@media (max-width: 1260px) {
+@media (max-width: 1380px) {
   .main-nav {
     position: fixed;
     top: 0; right: 0;
@@ -1195,6 +1210,7 @@ button { font: inherit; cursor: pointer; }
   .nav-link { font-size: 1.05rem; }
   .header-cta { display: none; }
   .pqta-badge { display: none; }
+  .header-social { display: none; }
   .nav-toggle { display: flex; }
 
   .nav-caret { display: none; }
