@@ -269,20 +269,14 @@
   }
 
   /* ---------------- cookie banner ---------------- */
+  // Shown on every visit (not remembered across visits), as requested.
   var cookieBanner = document.getElementById('cookieBanner');
   var cookieAccept = document.getElementById('cookieAccept');
   if (cookieBanner && cookieAccept) {
-    var CONSENT_KEY = 'tabelionato-cookie-consent';
-    var hasConsent = false;
-    try { hasConsent = localStorage.getItem(CONSENT_KEY) === '1'; } catch (e) {}
-
-    if (!hasConsent) {
-      setTimeout(function () { cookieBanner.classList.add('is-visible'); }, 800);
-    }
+    setTimeout(function () { cookieBanner.classList.add('is-visible'); }, 800);
 
     cookieAccept.addEventListener('click', function () {
       cookieBanner.classList.remove('is-visible');
-      try { localStorage.setItem(CONSENT_KEY, '1'); } catch (e) {}
     });
   }
 
