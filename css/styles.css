@@ -863,6 +863,9 @@ button { font: inherit; cursor: pointer; }
 .whatsapp-inline svg { width: 13px; height: 13px; fill: var(--navy-950); }
 .whatsapp-inline:hover { transform: scale(1.14); text-decoration: none; }
 
+.phone-reserve, .phone-reserve a { display: inline; font-size: .78rem; color: var(--muted); }
+.phone-reserve { display: block; margin-top: 4px; }
+
 .location-map {
   position: relative;
   display: flex;
