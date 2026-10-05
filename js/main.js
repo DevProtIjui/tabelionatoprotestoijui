@@ -6,6 +6,8 @@
   var mainNav = document.getElementById('mainNav');
   var scrollProgress = document.getElementById('scrollProgress');
   var backToTop = document.getElementById('backToTop');
+  var backToTopRing = document.getElementById('backToTopRing');
+  var RING_CIRCUMFERENCE = 131.9;
   var yearEl = document.getElementById('year');
   var navLinks = document.querySelectorAll('.nav-link');
   var sections = document.querySelectorAll('main section[id]');
@@ -56,6 +58,9 @@
 
     var progress = docHeight > 0 ? (scrollY / docHeight) * 100 : 0;
     if (scrollProgress) scrollProgress.style.width = progress + '%';
+    if (backToTopRing) {
+      backToTopRing.style.strokeDashoffset = RING_CIRCUMFERENCE * (1 - progress / 100);
+    }
 
     updateActiveNav(scrollY);
   }
@@ -109,6 +114,31 @@
   if (backToTop) {
     backToTop.addEventListener('click', function () {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ---------------- magnetic buttons ---------------- */
+  // Subtle cursor-follow effect on primary buttons. Skipped for
+  // touch devices (no real cursor) and prefers-reduced-motion.
+  var allowMotion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var hasFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (allowMotion && hasFinePointer) {
+    var MAGNETIC_STRENGTH = 0.25;
+    var MAGNETIC_MAX = 8;
+    document.querySelectorAll('.btn').forEach(function (btn) {
+      btn.addEventListener('mousemove', function (e) {
+        var rect = btn.getBoundingClientRect();
+        var relX = e.clientX - rect.left - rect.width / 2;
+        var relY = e.clientY - rect.top - rect.height / 2;
+        var mx = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relX * MAGNETIC_STRENGTH));
+        var my = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relY * MAGNETIC_STRENGTH));
+        btn.style.setProperty('--mx', mx.toFixed(1) + 'px');
+        btn.style.setProperty('--my', my.toFixed(1) + 'px');
+      });
+      btn.addEventListener('mouseleave', function () {
+        btn.style.setProperty('--mx', '0px');
+        btn.style.setProperty('--my', '0px');
+      });
     });
   }
 
