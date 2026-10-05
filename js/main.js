@@ -126,16 +126,34 @@
     var MAGNETIC_STRENGTH = 0.25;
     var MAGNETIC_MAX = 8;
     document.querySelectorAll('.btn').forEach(function (btn) {
+      // The bounding rect is cached on mouseenter (not re-read on every
+      // mousemove, which would force a synchronous layout each time), and
+      // the actual style write is batched to one per animation frame.
+      var rect = null;
+      var pendingX = 0, pendingY = 0, ticking = false;
+
+      function applyMagnetic() {
+        btn.style.setProperty('--mx', pendingX.toFixed(1) + 'px');
+        btn.style.setProperty('--my', pendingY.toFixed(1) + 'px');
+        ticking = false;
+      }
+
+      btn.addEventListener('mouseenter', function () {
+        rect = btn.getBoundingClientRect();
+      });
       btn.addEventListener('mousemove', function (e) {
-        var rect = btn.getBoundingClientRect();
+        if (!rect) rect = btn.getBoundingClientRect();
         var relX = e.clientX - rect.left - rect.width / 2;
         var relY = e.clientY - rect.top - rect.height / 2;
-        var mx = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relX * MAGNETIC_STRENGTH));
-        var my = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relY * MAGNETIC_STRENGTH));
-        btn.style.setProperty('--mx', mx.toFixed(1) + 'px');
-        btn.style.setProperty('--my', my.toFixed(1) + 'px');
+        pendingX = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relX * MAGNETIC_STRENGTH));
+        pendingY = Math.max(-MAGNETIC_MAX, Math.min(MAGNETIC_MAX, relY * MAGNETIC_STRENGTH));
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(applyMagnetic);
+        }
       });
       btn.addEventListener('mouseleave', function () {
+        rect = null;
         btn.style.setProperty('--mx', '0px');
         btn.style.setProperty('--my', '0px');
       });
